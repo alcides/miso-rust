@@ -1,0 +1,7 @@
+[package]
+name = "miso-examples"
+version = "0.1.0"
+authors = ["Alcides Fonseca <me@alcidesfonseca.com>"]
+
+[dependencies]
+miso = { path = "../miso", version = "0.1.0" }
