@@ -1,0 +1,2 @@
+[build]
+rustflags = ["--codegen", "no-vectorize-loops", "--codegen","opt-level=3"]  # custom flags to pass to all compiler invocations
