@@ -1,9 +1,6 @@
 #[macro_use]
 extern crate miso;
 
-use std::cell::RefCell;
-use std::rc::Rc;
-
 use miso::runner::miso_runner;
 
 define_cell!( FibCell {
@@ -24,15 +21,13 @@ define_world!(
 
 fn main() {
     
-    let world = Rc::new(RefCell::new(World { 
+    let world = World { 
         fc: FibCell { n: 2, prev: 1, curr: 1 },
         fc2: FibCell { n: 2, prev: 1, curr: 1 },
-        }));
+    };
     
-    let w2 = miso_runner(world.clone(), 51-2);
-    
-    let w = world.borrow_mut();
+    let w = miso_runner(world, 51-2);
+
     println!("fib({:?}) = {:?}", w.fc.n, w.fc.curr);
-    println!("fib({:?}) = {:?}", w2.fc.n, w2.fc.curr);
 
 }
