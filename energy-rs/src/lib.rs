@@ -58,9 +58,13 @@ pub mod energy {
     fn read_msr(raw: RawFd, r : i64) -> u64 {
         
         let mut buf = [0u8;8];
-        let k = pread(raw, &mut buf, r);
+        match pread(raw, &mut buf, r) {
+            Ok(_)  => {},
+            _ => {
+                panic!("Error in pread");
+            }
+        }
         let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
-        println!("Error: {}", k);
         println!("Found: {}", r);
         r
     }
