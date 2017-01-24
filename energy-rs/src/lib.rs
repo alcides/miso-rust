@@ -43,32 +43,39 @@ pub mod energy {
         }
     }
     
-    fn open_msr() -> RawFd {
+    fn open_msr() -> Option<RawFd> {
         let k = File::open("/dev/cpu/0/msr");
         match k {
             Ok(k) => {
-                return k.as_raw_fd();
+                Some(k.as_raw_fd())
             },
             _ => {
                 panic!("No MSR");
+                None
             }
         }
     }
     
-    fn read_msr(raw: RawFd, r : i64) -> u64 {
-        
-        let mut buf = [0u8;8];
-        match pread(raw, &mut buf, r) {
-            Ok(a)  => {
-                println!("Read went well: {}", a);
+    fn read_msr(oraw: Option<RawFd>, r : i64) -> u64 {
+        match oraw {
+            Some(raw) => {
+                let mut buf = [0u8;8];
+                match pread(raw, &mut buf, r) {
+                    Ok(a)  => {
+                        println!("Read went well: {}", a);
+                    },
+                    Err(e) => {
+                        panic!("Invalid: {}", e);
+                    }
+                }
+                let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
+                println!("Found: {}", r);
+                r
             },
-            Err(e) => {
-                panic!("Invalid: {}", e);
+            _ => {
+                0
             }
         }
-        let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
-        println!("Found: {}", r);
-        r
     }
     
     pub fn start_recording() -> EnergyRecording {        
