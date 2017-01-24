@@ -18,8 +18,6 @@ pub mod energy {
 
 #[cfg(all(not(target_os="macos"), unix))]*/
 pub mod energy {
-    extern crate x86;
-    use energy::x86::shared::msr::MSR_PKG_ENERGY_STATUS;
     
     use std::sync::{Arc, Mutex, mpsc};
     use std::{thread, time};
@@ -78,12 +76,12 @@ pub mod energy {
         let t = thread::spawn(move || {
             
             let file = open_msr();
-            let mut previous_energy = read_msr(file, MSR_PKG_ENERGY_STATUS);
+            let mut previous_energy = read_msr(file, 0x639);
             
             loop {
                 thread::sleep(interval);
                 
-                let current_energy = read_msr(file, MSR_PKG_ENERGY_STATUS);
+                let current_energy = read_msr(file, 0x639);
                 let diff = current_energy - previous_energy;
                 previous_energy = current_energy;
                 
