@@ -22,11 +22,8 @@ pub mod energy {
     use std::sync::{Arc, Mutex, mpsc};
     use std::{thread, time};
     use std::fs::File;
-    use std::os::unix::io::{AsRawFd, RawFd};
     use std::mem;
-    
-    extern crate nix;
-    use energy::nix::sys::uio::pread;
+    use std::os::unix::fs::FileExt;
 
     pub struct EnergyRecording {
         energy_total: Arc<Mutex<u64>>,
@@ -43,39 +40,33 @@ pub mod energy {
         }
     }
     
-    fn open_msr() -> Option<RawFd> {
+    fn open_msr() -> File {
         let k = File::open("/dev/cpu/0/msr");
         match k {
             Ok(k) => {
-                Some(k.as_raw_fd())
+                return k;
             },
             _ => {
                 panic!("No MSR");
-                None
             }
         }
     }
     
-    fn read_msr(oraw: Option<RawFd>, r : i64) -> u64 {
-        match oraw {
-            Some(raw) => {
-                let mut buf = [0u8;8];
-                match pread(raw, &mut buf, r) {
-                    Ok(a)  => {
-                        println!("Read went well: {}", a);
-                    },
-                    Err(e) => {
-                        panic!("Invalid: {}", e);
-                    }
-                }
-                let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
-                println!("Found: {}", r);
-                r
+    fn read_msr(f: File, r : u64) -> u64 {
+        
+        let mut buf = [0u8;8];
+        
+        match f.read_at(&mut buf, r) {
+            Ok(a)  => {
+                println!("Read went well: {}", a);
             },
-            _ => {
-                0
+            Err(e) => {
+                panic!("Invalid: {}", e);
             }
         }
+        let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
+        println!("Found: {}", r);
+        r
     }
     
     pub fn start_recording() -> EnergyRecording {        
@@ -91,12 +82,14 @@ pub mod energy {
         let t = thread::spawn(move || {
             
             let file = open_msr();
+            
             let mut previous_energy = read_msr(file, 0x639);
+            println!("Energy: {}", previous_energy);
             
             loop {
                 thread::sleep(interval);
                 
-                let current_energy = read_msr(file, 0x639);
+                let current_energy = 0; //read_msr(file, 0x639);
                 let diff = current_energy - previous_energy;
                 previous_energy = current_energy;
                 
