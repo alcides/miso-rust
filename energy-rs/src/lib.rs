@@ -60,6 +60,7 @@ pub mod energy {
         let mut buf = [0u8;8];
         let _ = pread(raw, &mut buf, r);
         let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
+        println!("Found: {}", r);
         r
     }
     
