@@ -57,15 +57,14 @@ pub mod energy {
         let mut buf = [0u8;8];
         
         match f.read_at(&mut buf, r) {
-            Ok(a)  => {
-                println!("Read went well: {}", a);
+            Ok(_)  => {
+                // Do nothing!
             },
             Err(e) => {
                 panic!("Invalid: {}", e);
             }
         }
         let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
-        println!("Found: {}", r);
         r
     }
     
@@ -81,15 +80,12 @@ pub mod energy {
         
         let t = thread::spawn(move || {
             
-            let file = open_msr();
-            
-            let mut previous_energy = read_msr(file, 0x639);
+            let mut previous_energy = read_msr(open_msr(), 0x639);
             println!("Energy: {}", previous_energy);
             
             loop {
                 thread::sleep(interval);
-                
-                let current_energy = 0; //read_msr(file, 0x639);
+                let current_energy = read_msr(open_msr(), 0x639);
                 let diff = current_energy - previous_energy;
                 previous_energy = current_energy;
                 
