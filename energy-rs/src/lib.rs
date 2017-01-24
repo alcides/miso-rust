@@ -59,9 +59,11 @@ pub mod energy {
         
         let mut buf = [0u8;8];
         match pread(raw, &mut buf, r) {
-            Ok(_)  => {},
-            _ => {
-                panic!("Error in pread");
+            Ok(_)  => {
+                prin
+            },
+            a => {
+                panic!("Error in pread_ {}", a);
             }
         }
         let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
