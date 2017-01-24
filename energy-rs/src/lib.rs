@@ -46,7 +46,7 @@ pub mod energy {
     }
     
     fn open_msr() -> RawFd {
-        let k = File::open("/Users/alcides/Desktop/dev/cpu/%d/msr");
+        let k = File::open("/dev/cpu/0/msr");
         match k {
             Ok(k) => {
                 return k.as_raw_fd();
@@ -60,7 +60,7 @@ pub mod energy {
     fn read_msr(raw: RawFd, r : u32) -> u64 {
         
         let mut buf = [0u8;8];
-        pread(raw, &mut buf, r as i64);
+        let _ = pread(raw, &mut buf, r as i64);
         let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
         r
     }
@@ -77,7 +77,7 @@ pub mod energy {
         
         let t = thread::spawn(move || {
             
-            let mut file = open_msr();
+            let file = open_msr();
             let mut previous_energy = read_msr(file, MSR_PKG_ENERGY_STATUS);
             
             loop {
