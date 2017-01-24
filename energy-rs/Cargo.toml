@@ -6,3 +6,4 @@ authors = ["Alcides Fonseca <me@alcidesfonseca.com>"]
 [dependencies]
 rayon = "0.6.0"
 x86 = "*"
+nix = "*"

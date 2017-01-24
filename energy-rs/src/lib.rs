@@ -1,4 +1,4 @@
-#[cfg(any(target_os="macos", not(unix)))]
+/*#[cfg(any(target_os="macos", not(unix)))]
 pub mod energy {
     
     pub struct EnergyRecording {
@@ -16,13 +16,19 @@ pub mod energy {
 }
 
 
-#[cfg(all(not(target_os="macos"), unix))]
+#[cfg(all(not(target_os="macos"), unix))]*/
 pub mod energy {
     extern crate x86;
-    use energy::x86::shared::msr::{MSR_PKG_ENERGY_STATUS, rdmsr};
+    use energy::x86::shared::msr::MSR_PKG_ENERGY_STATUS;
     
     use std::sync::{Arc, Mutex, mpsc};
     use std::{thread, time};
+    use std::fs::File;
+    use std::os::unix::io::{AsRawFd, RawFd};
+    use std::mem;
+    
+    extern crate nix;
+    use energy::nix::sys::uio::pread;
 
     pub struct EnergyRecording {
         energy_total: Arc<Mutex<u64>>,
@@ -39,6 +45,26 @@ pub mod energy {
         }
     }
     
+    fn open_msr() -> RawFd {
+        let k = File::open("/Users/alcides/Desktop/dev/cpu/%d/msr");
+        match k {
+            Ok(k) => {
+                return k.as_raw_fd();
+            },
+            _ => {
+                panic!("No MSR");
+            }
+        }
+    }
+    
+    fn read_msr(raw: RawFd, r : u32) -> u64 {
+        
+        let mut buf = [0u8;8];
+        pread(raw, &mut buf, r as i64);
+        let r = unsafe { mem::transmute::<[u8; 8], u64>(buf) };
+        r
+    }
+    
     pub fn start_recording() -> EnergyRecording {        
         
         let interval = time::Duration::from_millis(100);        
@@ -50,12 +76,14 @@ pub mod energy {
         let (tx, rx) = mpsc::channel();
         
         let t = thread::spawn(move || {
-            let mut previous_energy = unsafe { rdmsr(MSR_PKG_ENERGY_STATUS) };
+            
+            let mut file = open_msr();
+            let mut previous_energy = read_msr(file, MSR_PKG_ENERGY_STATUS);
             
             loop {
                 thread::sleep(interval);
                 
-                let current_energy = unsafe { rdmsr(MSR_PKG_ENERGY_STATUS) };
+                let current_energy = read_msr(file, MSR_PKG_ENERGY_STATUS);
                 let diff = current_energy - previous_energy;
                 previous_energy = current_energy;
                 
