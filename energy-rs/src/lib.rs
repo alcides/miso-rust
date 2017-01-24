@@ -81,12 +81,15 @@ pub mod energy {
         let t = thread::spawn(move || {
             
             let mut previous_energy = read_msr(open_msr(), 0x639);
-            println!("Energy: {}", previous_energy);
             
             loop {
                 thread::sleep(interval);
                 let current_energy = read_msr(open_msr(), 0x639);
-                let diff = current_energy - previous_energy;
+
+                let mut diff = current_energy - previous_energy;                
+                if current_energy < previous_energy {
+                    diff = 4294967295u64 - previous_energy + current_energy;
+                }
                 previous_energy = current_energy;
                 
                 let mut energy_rec = ie.lock().unwrap();
