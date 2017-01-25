@@ -1,10 +1,9 @@
-extern crate time;
-
 #[macro_use]
 extern crate miso;
 
-use time::{Duration, PreciseTime};
 use miso::runner::miso_runner;
+
+mod benchmark;
 
 define_cell!( FibCell {
     n: u64,
@@ -32,17 +31,8 @@ fn fib_main() -> World {
 
 #[allow(unused_variables)]
 fn main() {
-    let mut iterations = 0;
-    let mut t = Duration::seconds(0);
-    
-    let start = PreciseTime::now();
-    while t < Duration::seconds(10) {
-        for _ in 1..1000 {
-            let w = fib_main();
-        }
-        iterations += 1;
-        //println!("fib({:?}) = {:?}", w.fc.n, w.fc.curr);
-        t = start.to(PreciseTime::now())
-    }
-    println!("{}", t.num_milliseconds() as f64 / (1000 * iterations) as f64);
+    benchmark::benchmark(|| {
+        let w = fib_main();
+        println!("fib({:?}) = {:?}", w.fc.n, w.fc.curr);
+    });
 }

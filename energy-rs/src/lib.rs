@@ -1,11 +1,11 @@
-/*#[cfg(any(target_os="macos", not(unix)))]
+#[cfg(any(target_os="macos", not(unix)))]
 pub mod energy {
     
     pub struct EnergyRecording {
     }
     
     impl EnergyRecording {
-        pub fn stop_recording(self) -> Option<u64> {
+        pub fn stop_recording(self) -> Option<f64> {
             None
         }
     }
@@ -16,7 +16,7 @@ pub mod energy {
 }
 
 
-#[cfg(all(not(target_os="macos"), unix))]*/
+#[cfg(all(not(target_os="macos"), unix))]
 pub mod energy {
     
     const MSR_ENERGY_PACKAGE:u64 = 0x639;

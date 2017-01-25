@@ -1,17 +1,15 @@
-extern crate time;
+
 
 #[macro_use]
 extern crate miso;
 extern crate num;
-extern crate energy;
 
-use time::{Duration, PreciseTime};
 use miso::runner::miso_runner;
 use num::BigUint;
 use std::u64::MAX;
 use num::ToPrimitive;
-use energy::energy::start_recording;
 
+mod benchmark;
 
 define_cell!( FactorialCell {
     lower: u64,
@@ -69,27 +67,8 @@ fn fib_main() -> BigUint {
 
 #[allow(unused_variables)]
 fn main() {
-    let mut iterations = 0;
-    let mut time = Duration::seconds(0);
-    let mut energy = 0.0;
-    
-    let start_e = start_recording();
-    let start_t = PreciseTime::now();
-    
-    while time < Duration::seconds(10) {
+    benchmark::benchmark(|| {
         let r = fib_main();
         println!("80000! = {}", r);
-        time = start_t.to(PreciseTime::now());
-        iterations += 1;
-    }
-    let en = start_e.stop_recording();
-    match en {
-        None => {},
-        Some(e) => {
-            energy = e;
-        }
-    }
-    
-    println!("Time: {}", time.num_milliseconds() as f64 / (1000 * iterations) as f64);
-    println!("Energy: {}", energy as f64 / (iterations) as f64);
+    });
 }

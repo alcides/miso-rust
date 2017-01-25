@@ -1,10 +1,9 @@
-extern crate time;
-
 #[macro_use]
 extern crate miso;
 
-use time::{Duration, PreciseTime};
 use miso::runner::miso_runner;
+
+mod benchmark;
 
 define_cell!( MatMulCell {
     n: u64,
@@ -31,6 +30,13 @@ define_world_par!(
 fn mm_main() -> World {
     let world = World { 
         c1: MatMulCell { n: 2, prev: 1, curr: 1 },
+        c2: MatMulCell { n: 2, prev: 1, curr: 1 },
+        c3: MatMulCell { n: 2, prev: 1, curr: 1 },
+        c4: MatMulCell { n: 2, prev: 1, curr: 1 },
+        c5: MatMulCell { n: 2, prev: 1, curr: 1 },
+        c6: MatMulCell { n: 2, prev: 1, curr: 1 },
+        c7: MatMulCell { n: 2, prev: 1, curr: 1 },
+        c8: MatMulCell { n: 2, prev: 1, curr: 1 },
     };
     
     let w = miso_runner(world, 51-2);
@@ -39,17 +45,7 @@ fn mm_main() -> World {
 
 #[allow(unused_variables)]
 fn main() {
-    let mut iterations = 0;
-    let mut t = Duration::seconds(0);
-    
-    let start = PreciseTime::now();
-    while t < Duration::seconds(10) {
-        for _ in 1..1000 {
-            let w = mm_main();
-        }
-        iterations += 1;
-        //println!("fib({:?}) = {:?}", w.fc.n, w.fc.curr);
-        t = start.to(PreciseTime::now())
-    }
-    println!("{}", t.num_milliseconds() as f64 / (1000 * iterations) as f64);
+    benchmark::benchmark(|| {
+        let _ = mm_main();
+    });
 }
