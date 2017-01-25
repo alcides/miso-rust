@@ -68,7 +68,14 @@ pub mod energy {
         r
     }
     
-    pub fn start_recording() -> EnergyRecording {        
+    pub fn start_recording() -> EnergyRecording {
+            
+        let MSR_ENERGY_PACKAGE = 0x639;
+        let MSR_RAPL_POWER_UNIT = 0x606;
+        
+        let units = read_msr(open_msr(), MSR_RAPL_POWER_UNIT);
+        let x = 0.5_f64;
+        let energy_unit = x.powi( ((units >> 8) & 0x1f) as i32) as u64;
         
         let interval = time::Duration::from_millis(100);        
         
@@ -80,11 +87,11 @@ pub mod energy {
         
         let t = thread::spawn(move || {
             
-            let mut previous_energy = read_msr(open_msr(), 0x639);
+            let mut previous_energy = read_msr(open_msr(), MSR_ENERGY_PACKAGE);
             
             loop {
                 thread::sleep(interval);
-                let current_energy = read_msr(open_msr(), 0x639);
+                let current_energy = read_msr(open_msr(), MSR_ENERGY_PACKAGE);
 
                 let mut diff = current_energy - previous_energy;                
                 if current_energy < previous_energy {
@@ -93,7 +100,7 @@ pub mod energy {
                 previous_energy = current_energy;
                 
                 let mut energy_rec = ie.lock().unwrap();
-                *energy_rec += diff;
+                *energy_rec += diff * energy_unit;
                 if rx.try_recv().is_ok() {
                     break;
                 }
