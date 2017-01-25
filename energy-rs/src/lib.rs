@@ -19,6 +19,9 @@ pub mod energy {
 #[cfg(all(not(target_os="macos"), unix))]*/
 pub mod energy {
     
+    const MSR_ENERGY_PACKAGE:u64 = 0x639;
+    const MSR_RAPL_POWER_UNIT:u64 = 0x606;
+    
     use std::sync::{Arc, Mutex, mpsc};
     use std::{thread, time};
     use std::fs::File;
@@ -26,13 +29,13 @@ pub mod energy {
     use std::os::unix::fs::FileExt;
 
     pub struct EnergyRecording {
-        energy_total: Arc<Mutex<u64>>,
+        energy_total: Arc<Mutex<f64>>,
         thread: thread::JoinHandle<()>,
         tx: mpsc::Sender<()>
     }
     
     impl EnergyRecording {
-        pub fn stop_recording(self) -> Option<u64> {
+        pub fn stop_recording(self) -> Option<f64> {
             let _ = self.tx.send(());
             let _ = self.thread.join();
             let r = self.energy_total.lock().unwrap();
@@ -69,17 +72,14 @@ pub mod energy {
     }
     
     pub fn start_recording() -> EnergyRecording {
-            
-        let MSR_ENERGY_PACKAGE = 0x639;
-        let MSR_RAPL_POWER_UNIT = 0x606;
         
         let units = read_msr(open_msr(), MSR_RAPL_POWER_UNIT);
-        let x = 0.5_f64;
-        let energy_unit = x.powi( ((units >> 8) & 0x1f) as i32) as u64;
+        let units_2 = ((units >> 8) & 0x1f) as u32;
+        let energy_unit:f64 = 1.0 / (1 << units_2) as f64;
         
         let interval = time::Duration::from_millis(100);        
         
-        let e = Arc::new(Mutex::new(0));
+        let e = Arc::new(Mutex::new(0.0));
         
         let ie = e.clone();
         
@@ -100,7 +100,7 @@ pub mod energy {
                 previous_energy = current_energy;
                 
                 let mut energy_rec = ie.lock().unwrap();
-                *energy_rec += diff * energy_unit;
+                *energy_rec += diff as f64 * energy_unit;
                 if rx.try_recv().is_ok() {
                     break;
                 }

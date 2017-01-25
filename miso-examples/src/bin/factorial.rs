@@ -71,7 +71,7 @@ fn fib_main() -> BigUint {
 fn main() {
     let mut iterations = 0;
     let mut time = Duration::seconds(0);
-    let mut energy = 0;
+    let mut energy = 0.0;
     
     let start_e = start_recording();
     let start_t = PreciseTime::now();
