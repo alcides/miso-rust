@@ -6,6 +6,24 @@ mod miso {
         ($($element: ident: $ty: ty),*) => {
             #[derive(Clone, Copy, Eq, PartialEq, Debug)]
             struct World { $($element: $ty),* }
+            
+            trait Cell<T> : Copy + Clone + Eq + PartialEq {
+                fn transition(&mut self, prev:&T, w:&World);
+            }
+            
+            #[derive(Clone, Copy, Eq, PartialEq, Debug)]
+            struct CellArray<T> where T : Cell<T> {
+                cells : [T; 8]
+            }
+            
+            impl<T> CellArray<T> where T : Cell<T> {
+                fn transition(&mut self, &p: &CellArray<T>, &world: &World) {
+                    
+                    for (n, o) in self.cells.iter_mut().zip(p.cells.iter()) {
+                        n.transition(&o, &world);
+                    }
+                }
+            }
         
             use miso::runner::Transitionable;
             impl Transitionable for World {
