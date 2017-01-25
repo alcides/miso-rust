@@ -1,4 +1,4 @@
-#[cfg(any(target_os="macos", not(unix)))]
+#[cfg(any(target_os="macos", not(unix), not(target_arch = "x86_64") ))]
 pub mod energy {
     
     pub struct EnergyRecording {
