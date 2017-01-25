@@ -16,27 +16,15 @@ define_cell!( MatMulCell {
 });
 
 define_world_par!(
-    c1: MatMulCell,
-    c2: MatMulCell,
-    c3: MatMulCell,
-    c4: MatMulCell,
-    c5: MatMulCell,
-    c6: MatMulCell,
-    c7: MatMulCell,
-    c8: MatMulCell
+    cs: CellArray<MatMulCell>
 );
 
 
 fn mm_main() -> World {
     let world = World { 
-        c1: MatMulCell { n: 2, prev: 1, curr: 1 },
-        c2: MatMulCell { n: 2, prev: 1, curr: 1 },
-        c3: MatMulCell { n: 2, prev: 1, curr: 1 },
-        c4: MatMulCell { n: 2, prev: 1, curr: 1 },
-        c5: MatMulCell { n: 2, prev: 1, curr: 1 },
-        c6: MatMulCell { n: 2, prev: 1, curr: 1 },
-        c7: MatMulCell { n: 2, prev: 1, curr: 1 },
-        c8: MatMulCell { n: 2, prev: 1, curr: 1 },
+        cs: CellArray {
+            cells: [ MatMulCell { n: 2, prev: 1, curr: 1 } ; 8 ]
+        }
     };
     
     let w = miso_runner(world, 51-2);
