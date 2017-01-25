@@ -35,5 +35,6 @@ fn mm_main() -> World {
 fn main() {
     benchmark::benchmark(|| {
         let _ = mm_main();
+        1
     });
 }

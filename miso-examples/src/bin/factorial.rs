@@ -65,6 +65,7 @@ fn fib_main() -> BigUint {
 fn main() {
     benchmark::benchmark(|| {
         let r = fib_main();
-        println!("80000! = {}", r);
-    });
+        //println!("80000! = {}", r);
+        r
+    } );
 }

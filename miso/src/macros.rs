@@ -17,6 +17,7 @@ mod miso {
             }
             
             impl<T> CellArray<T> where T : Cell<T> {
+                #[allow(dead_code)] 
                 fn transition(&mut self, &p: &CellArray<T>, &world: &World) {
                     
                     for (n, o) in self.cells.iter_mut().zip(p.cells.iter()) {

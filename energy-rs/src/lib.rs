@@ -16,7 +16,7 @@ pub mod energy {
 }
 
 
-#[cfg(all(not(target_os="macos"), unix))]
+#[cfg(all(not(target_os="macos"), unix, target_arch = "x86_64"))]
 pub mod energy {
     
     const MSR_ENERGY_PACKAGE:u64 = 0x639;
