@@ -48,8 +48,6 @@ mod miso {
     macro_rules! define_world {
         ($($element: ident: $ty: ty),*) => {
             
-            extern crate rayon;
-            
             #[derive(Clone, Copy, Eq, PartialEq, Debug)]
             struct World { 
                 $($element: $ty),*
@@ -75,6 +73,7 @@ mod miso {
             }
             
         
+            use std::thread;
             use miso::runner::Transitionable;
             impl Transitionable for World {
                 
@@ -82,15 +81,21 @@ mod miso {
                 #[allow(path_statements)]
                 fn transition(&mut self) {
                     let ref old_world = self.clone();
-                    
-                    let mut a = rayon::join (|| { () }, || { () }); // dummy
-                    
+                    let mut handles = Vec::new();
+                    {
+                        let mut self_clone = self.clone();
+                        let ow = old_world.clone();
                     $(
-                        a = rayon::join( || { a; ()}, || {
-                            self.$element.transition(&old_world.$element, &old_world); 
-                            ()
-                        });
+                        handles.push(thread::spawn( move || {
+                            self_clone.$element.transition(&ow.$element, &ow);
+                        }));
                     ) *
+                    }
+                    
+                    #[allow(unused_must_use)]
+                    for t in handles {
+                        t.join();
+                    }
                 }
             }
         }
