@@ -1,9 +1,6 @@
 #[macro_use]
 extern crate miso;
 
-#[macro_use]
-extern crate lazy_static;
-
 use miso::runner::miso_runner;
 
 
