@@ -2,6 +2,7 @@
 extern crate miso;
 
 use miso::runner::miso_runner;
+use std::env::args;
 
 mod benchmark;
 
@@ -33,7 +34,9 @@ fn fib_main() -> World {
 fn main() {
     benchmark::benchmark(|| {
         let w = fib_main();
-        println!("fib({:?}) = {:?}", w.fc.n, w.fc.curr);
+        if args().count() > 1 {
+            println!("fib({:?}) = {:?}", w.fc.n, w.fc.curr);
+        }
         w.fc.curr
     });
 }

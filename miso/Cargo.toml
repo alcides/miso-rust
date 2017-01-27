@@ -7,5 +7,6 @@ authors = ["Alcides Fonseca <me@alcidesfonseca.com>"]
 rayon = "0.6.0"
 
 [features]
-seq = []
+default = []
 par = []
+ft = []

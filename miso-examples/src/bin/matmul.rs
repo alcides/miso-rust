@@ -6,6 +6,7 @@ extern crate lazy_static;
 
 use miso::runner::miso_runner;
 
+
 mod benchmark;
 
 struct Mat4 {
@@ -52,7 +53,7 @@ define_world!(
 );
 
 
-fn mm_main() -> World {
+fn mm_main() -> u32 {
     let world = World { 
         cs: CellArray {
             cells: [
@@ -69,7 +70,11 @@ fn mm_main() -> World {
     };
     
     let w = miso_runner(world, 1);
-    w
+    let mut s = 0;
+    for i in w.cs.cells.iter() {
+        s += i.check;
+    }
+    s
 }
 
 #[allow(unused_variables)]

@@ -1,12 +1,13 @@
 use std::fmt::Debug;
+
+#[allow(unused_imports)]
 use std::sync::{Arc, Barrier, Mutex};
-use std::thread;
-use std::cmp::min;
 
 pub trait Transitionable : Clone + Copy + Eq + PartialEq + Debug + Sync + Send {
     fn transition(&mut self);
 }
 
+#[cfg(feature = "ft")]
 fn advance_world<W: Transitionable>(w:Arc<Mutex<W>>, iters:u64, b:Arc<Barrier>) {
     for _ in 0..iters {
         let mut w = w.lock().unwrap();
@@ -15,8 +16,11 @@ fn advance_world<W: Transitionable>(w:Arc<Mutex<W>>, iters:u64, b:Arc<Barrier>) 
     }
 } 
 
-
-pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W{
+#[cfg(feature = "ft")]
+pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W {
+    use std::thread;
+    use std::cmp::min;
+    
     let bw = w;
     let original = Arc::new(Mutex::new(w));
     let backup = Arc::new(Mutex::new(bw));
@@ -61,4 +65,14 @@ pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W{
         
     let k = original.lock().unwrap();
     *k
+}
+
+
+#[cfg(not(feature = "ft"))]
+pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W {
+    let mut w2 = w;
+    for _ in 0..i {
+        w2.transition();
+    }
+    w2
 }

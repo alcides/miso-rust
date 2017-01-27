@@ -5,9 +5,9 @@ authors = ["Alcides Fonseca <me@alcidesfonseca.com>"]
 
 
 [features]
-default = ["seq"]
+default = []
 par = ["miso/par"]
-seq = ["miso/seq"]
+ft = ["miso/ft"]
 
 
 [dependencies]
@@ -16,4 +16,3 @@ energy = { path = "../energy-rs", version = "0.1.0" }
 rayon = "0.6.0"
 time = "*"
 num = "0.1"
-lazy_static = "0.1.*"
