@@ -33,7 +33,7 @@ fn fib_main() -> World {
 fn main() {
     benchmark::benchmark(|| {
         let w = fib_main();
-        //println!("fib({:?}) = {:?}", w.fc.n, w.fc.curr);
+        println!("fib({:?}) = {:?}", w.fc.n, w.fc.curr);
         w.fc.curr
     });
 }

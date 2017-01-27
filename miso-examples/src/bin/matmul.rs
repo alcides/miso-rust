@@ -6,10 +6,13 @@ use miso::runner::miso_runner;
 mod benchmark;
 
 define_cell!( MatMulCell {
-    n: u64,
-    prev: u64,
-    curr: u64
+    x_start: u64,
+    x_end: u64,
+    y_start: u64,
+    y_end: u64
     } => self, previous, world {
+        
+        
         self.n = previous.n + 1;
         self.prev = previous.curr;
         self.curr = previous.curr + previous.prev;

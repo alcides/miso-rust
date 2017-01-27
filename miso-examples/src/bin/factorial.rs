@@ -40,7 +40,7 @@ fn extract(c : FactorialCell) -> BigUint {
 
 
 fn fib_main() -> BigUint {
-    let world = World { 
+    let world = World {
         facts : CellArray {
             cells : [
                 FactorialCell { lower: 1, upper: 10000, value: 1, overflows: 0},
@@ -65,7 +65,7 @@ fn fib_main() -> BigUint {
 fn main() {
     benchmark::benchmark(|| {
         let r = fib_main();
-        //println!("80000! = {}", r);
+        println!("80000! = {}", r);
         r
     } );
 }
