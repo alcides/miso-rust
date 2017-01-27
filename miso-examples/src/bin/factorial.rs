@@ -6,6 +6,7 @@ use miso::runner::miso_runner;
 use num::BigUint;
 use std::u64::MAX;
 use num::ToPrimitive;
+use std::env::args;
 
 mod benchmark;
 
@@ -30,7 +31,7 @@ define_cell!( FactorialCell {
         };
 });
 
-define_world_par!(
+define_world!(
     facts: CellArray<FactorialCell>
 );
 
@@ -65,7 +66,9 @@ fn fib_main() -> BigUint {
 fn main() {
     benchmark::benchmark(|| {
         let r = fib_main();
-        println!("80000! = {}", r);
+        if args().count() > 1 {
+            println!("80000! = {}", r);
+        }
         r
     } );
 }

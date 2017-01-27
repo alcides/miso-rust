@@ -1,6 +1,8 @@
 #[macro_use]
 mod miso {
     
+    
+    #[cfg(feature = "seq")]
     #[macro_export]
     macro_rules! define_world {
         ($($element: ident: $ty: ty),*) => {
@@ -41,8 +43,9 @@ mod miso {
         }
     }
     
+    #[cfg(feature = "par")]
     #[macro_export]
-    macro_rules! define_world_par {
+    macro_rules! define_world {
         ($($element: ident: $ty: ty),*) => {
             
             extern crate rayon;

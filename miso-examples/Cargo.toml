@@ -3,9 +3,17 @@ name = "miso-examples"
 version = "0.1.0"
 authors = ["Alcides Fonseca <me@alcidesfonseca.com>"]
 
+
+[features]
+default = ["seq"]
+par = ["miso/par"]
+seq = ["miso/seq"]
+
+
 [dependencies]
-miso = { path = "../miso", version = "0.1.0" }
+miso = { path = "../miso", version = "0.1.0", default-features = false }
 energy = { path = "../energy-rs", version = "0.1.0" }
 rayon = "0.6.0"
 time = "*"
 num = "0.1"
+lazy_static = "0.1.*"

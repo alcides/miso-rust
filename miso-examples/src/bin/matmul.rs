@@ -1,24 +1,53 @@
 #[macro_use]
 extern crate miso;
 
+#[macro_use]
+extern crate lazy_static;
+
 use miso::runner::miso_runner;
 
 mod benchmark;
 
+struct Mat4 {
+    dat: [f32; 640000]
+}
+
+const M1:Mat4 = Mat4 {
+    dat: [1.0; 640000]
+};
+
+const M2:Mat4 = Mat4 {
+    dat: [1.0; 640000]
+};
+
+static mut M3:Mat4 = Mat4 {
+    dat: [1.0; 640000]
+};
+
+
+
 define_cell!( MatMulCell {
     x_start: u64,
     x_end: u64,
-    y_start: u64,
-    y_end: u64
+    check: u32
     } => self, previous, world {
-        
-        
-        self.n = previous.n + 1;
-        self.prev = previous.curr;
-        self.curr = previous.curr + previous.prev;
+        self.check = 0;
+        for i in self.x_start..self.x_end {
+            for j in 0..800 {
+                let mut a = 0.0;
+                for k in 0..800 {
+                    a += M1.dat[(i * 800 + k) as usize] * M2.dat[(k * 800 + j) as usize];
+                }
+                
+                unsafe {
+                    M3.dat[(i * 800 + j) as usize] = a;
+                }
+                self.check += a as u32;
+            } 
+        }
 });
 
-define_world_par!(
+define_world!(
     cs: CellArray<MatMulCell>
 );
 
@@ -26,18 +55,28 @@ define_world_par!(
 fn mm_main() -> World {
     let world = World { 
         cs: CellArray {
-            cells: [ MatMulCell { n: 2, prev: 1, curr: 1 } ; 8 ]
+            cells: [
+                MatMulCell { x_start: 0, x_end: 100, check: 0},
+                MatMulCell { x_start: 100, x_end: 200, check: 0},
+                MatMulCell { x_start: 200, x_end: 300, check: 0},
+                MatMulCell { x_start: 300, x_end: 400, check: 0},
+                MatMulCell { x_start: 400, x_end: 500, check: 0},
+                MatMulCell { x_start: 500, x_end: 600, check: 0},
+                MatMulCell { x_start: 600, x_end: 700, check: 0},
+                MatMulCell { x_start: 700, x_end: 800, check: 0},
+            ]
         }
     };
     
-    let w = miso_runner(world, 51-2);
+    let w = miso_runner(world, 1);
     w
 }
 
 #[allow(unused_variables)]
 fn main() {
-    benchmark::benchmark(|| {
-        let _ = mm_main();
+    
+    benchmark::benchmark(move || {
+        let m3 = mm_main();
         1
     });
 }
