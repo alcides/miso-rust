@@ -79,6 +79,9 @@ fn main() {
     
     benchmark::benchmark(move || {
         let m3 = mm_main();
-        1
+        if args().count() > 1 {
+            println!("check = {:?}", m3);
+        }
+        m3
     });
 }

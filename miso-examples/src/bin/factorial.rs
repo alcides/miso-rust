@@ -44,14 +44,14 @@ fn fib_main() -> BigUint {
     let world = World {
         facts : CellArray {
             cells : [
-                FactorialCell { lower: 1, upper: 10000, value: 1, overflows: 0},
-                FactorialCell { lower: 10000, upper: 20000, value: 1, overflows: 0},
-                FactorialCell { lower: 20000, upper: 30000, value: 1, overflows: 0},
-                FactorialCell { lower: 30000, upper: 40000, value: 1, overflows: 0},
-                FactorialCell { lower: 40000, upper: 50000, value: 1, overflows: 0},
-                FactorialCell { lower: 50000, upper: 60000, value: 1, overflows: 0},
-                FactorialCell { lower: 60000, upper: 70000, value: 1, overflows: 0},
-                FactorialCell { lower: 70000, upper: 80000, value: 1, overflows: 0},
+                FactorialCell { lower: 1, upper: 100000, value: 1, overflows: 0},
+                FactorialCell { lower: 100000, upper: 200000, value: 1, overflows: 0},
+                FactorialCell { lower: 200000, upper: 300000, value: 1, overflows: 0},
+                FactorialCell { lower: 300000, upper: 400000, value: 1, overflows: 0},
+                FactorialCell { lower: 400000, upper: 500000, value: 1, overflows: 0},
+                FactorialCell { lower: 500000, upper: 600000, value: 1, overflows: 0},
+                FactorialCell { lower: 600000, upper: 700000, value: 1, overflows: 0},
+                FactorialCell { lower: 700000, upper: 800000, value: 1, overflows: 0},
             ]
         }
     };
@@ -67,7 +67,7 @@ fn main() {
     benchmark::benchmark(|| {
         let r = fib_main();
         if args().count() > 1 {
-            println!("80000! = {}", r);
+            println!("800000! = {}", r);
         }
         r
     } );

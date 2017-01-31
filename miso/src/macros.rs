@@ -54,7 +54,7 @@ mod miso {
             }
             
             
-            trait Cell<T> : Copy + Clone + Eq + PartialEq {
+            trait Cell<T> : Copy + Clone + Eq + PartialEq + Sync + Send {
                 fn transition(&mut self, prev:&T, w:&World);
             }
             
@@ -63,12 +63,24 @@ mod miso {
                 cells : [T; 8]
             }
             
-            impl<T> CellArray<T> where T : Cell<T> {
+            impl<T> CellArray<T> where T : Cell<T>, T: Send + 'static {
                 #[allow(dead_code)]
                 fn transition(&mut self, &p: &CellArray<T>, &world: &World) {
                     
-                    for (n, o) in self.cells.iter_mut().zip(p.cells.iter()) {
-                        n.transition(&o, &world);
+                    let mut handles = Vec::new();
+                    let w = world.clone();
+                    for i in 0..8 {
+                        let mut c = self.cells[i].clone();
+                        let pr = p.cells[i].clone();
+                        
+                        handles.push(thread::spawn( move || {
+                            c.transition(&pr, &w);
+                        }));
+                    }
+                    
+                    #[allow(unused_must_use)]
+                    for t in handles {
+                        t.join();
                     }
                 }
             }
