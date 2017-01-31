@@ -17,7 +17,7 @@ pub fn benchmark<R, F>(mut func: F) where F : FnMut() -> R, R: Eq {
     let mut default:Option<R> = None;
     
     
-    while time < Duration::seconds(10) {
+    while time < Duration::seconds(4) {
         let r = func();
         time = start_t.to(PreciseTime::now());
         iterations += 1;
