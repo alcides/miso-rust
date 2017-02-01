@@ -2,7 +2,7 @@
 extern crate miso;
 
 use miso::runner::miso_runner;
-
+use std::env::args;
 
 mod benchmark;
 
@@ -67,11 +67,8 @@ fn mm_main() -> u32 {
     };
     
     let w = miso_runner(world, 1);
-    let mut s = 0;
-    for i in w.cs.cells.iter() {
-        s += i.check;
-    }
-    s
+    let rs = w.cs.cells.iter().map(|x| (*x).check);
+    rs.fold(0, |p, val| p + val)
 }
 
 #[allow(unused_variables)]

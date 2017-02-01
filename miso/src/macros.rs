@@ -63,24 +63,41 @@ mod miso {
                 cells : [T; 8]
             }
             
+            use std::sync::{Arc,RwLock};
+            
             impl<T> CellArray<T> where T : Cell<T>, T: Send + 'static {
                 #[allow(dead_code)]
                 fn transition(&mut self, &p: &CellArray<T>, &world: &World) {
                     
+                    let old_world = world.clone(); // Copy
+                                        
                     let mut handles = Vec::new();
-                    let w = world.clone();
+                    let mut refs = Vec::new();
+                    
                     for i in 0..8 {
-                        let mut c = self.cells[i].clone();
-                        let pr = p.cells[i].clone();
-                        
-                        handles.push(thread::spawn( move || {
-                            c.transition(&pr, &w);
-                        }));
+                        let r = Arc::new(RwLock::new(self.cells[i]));
+                        refs.push(r);
+                        let inner_e = refs[i].clone();
+                        {
+                            let ow = old_world.clone();
+
+                            handles.push(thread::spawn( move || {
+                                let mut inner_e_v = inner_e.write().unwrap();
+                                inner_e_v.transition(&p.cells[i], &ow);
+                            }));
+                        }
                     }
                     
                     #[allow(unused_must_use)]
                     for t in handles {
                         t.join();
+                    }
+                    
+                    for i in 0..8 {
+                        {
+                            let e = refs[i].read().unwrap();
+                            self.cells[i] = e.clone();
+                        }
                     }
                 }
             }
@@ -93,22 +110,36 @@ mod miso {
                 #[allow(unused_assignments)]
                 #[allow(path_statements)]
                 fn transition(&mut self) {
-                    let ref old_world = self.clone();
+                    
+                    let old_world = self.clone(); // Copy
+                                        
                     let mut handles = Vec::new();
-                    {
-                        let mut self_clone = self.clone();
-                        let ow = old_world.clone();
+                    
                     $(
-                        handles.push(thread::spawn( move || {
-                            self_clone.$element.transition(&ow.$element, &ow);
-                        }));
+                        let $element = Arc::new(RwLock::new(self.$element));
+                        {
+                            let ow = old_world.clone();
+                            
+                            let inner_e = ($element).clone();
+                            handles.push(thread::spawn( move || {
+                                let mut inner_e_v = inner_e.write().unwrap();
+                                inner_e_v.transition(&ow.$element, &ow);
+                            }));
+                        }
                     ) *
-                    }
                     
                     #[allow(unused_must_use)]
                     for t in handles {
                         t.join();
                     }
+                    
+                    $(
+                        {
+                            let e = (*$element).read().unwrap();
+                            self.$element = e.clone();
+                        }
+                    ) *
+                  
                 }
             }
         }
