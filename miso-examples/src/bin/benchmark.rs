@@ -5,7 +5,7 @@ use self::time::{Duration, PreciseTime};
 use self::energy::energy::start_recording;
 
 
-pub fn benchmark<R, F>(mut func: F) where F : FnMut() -> R, R: Eq {
+pub fn benchmark<R, F>(mut func: F) where F : FnMut() -> R, R: PartialEq {
 
     let mut iterations = 0;
     let mut time = Duration::seconds(0);
