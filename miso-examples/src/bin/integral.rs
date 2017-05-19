@@ -30,7 +30,7 @@ define_world!(
 
 
 fn integral_main() -> f64 {
-    let world = World { 
+    let world = World {
         cs: CellArray {
             cells: [
                 IntegralCell { x_start: 000.0, x_end: 100.0, int: 0.0},

@@ -56,7 +56,7 @@ fn fib_main() -> BigUint {
         }
     };
     let w = miso_runner(world, 1);
-    
+
     let rs = w.facts.cells.iter().map(|x| extract(*x));
     rs.fold(BigUint::from(1u64), |p, val| p * val)
 }

@@ -22,10 +22,10 @@ define_world!(
 
 
 fn fib_main() -> World {
-    let world = World { 
+    let world = World {
         fc: FibCell { n: 2, prev: 1, curr: 1 },
     };
-    
+
     let w = miso_runner(world, 51-2);
     w
 }

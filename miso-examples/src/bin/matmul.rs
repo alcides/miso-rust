@@ -36,12 +36,12 @@ define_cell!( MatMulCell {
                 for k in 0..800 {
                     a += M1.dat[(i * 800 + k) as usize] * M2.dat[(k * 800 + j) as usize];
                 }
-                
+
                 unsafe {
                     M3.dat[(i * 800 + j) as usize] = a;
                 }
                 self.check += a as u32;
-            } 
+            }
         }
 });
 
@@ -51,7 +51,7 @@ define_world!(
 
 
 fn mm_main() -> u32 {
-    let world = World { 
+    let world = World {
         cs: CellArray {
             cells: [
                 MatMulCell { x_start: 0, x_end: 100, check: 0},
@@ -65,7 +65,7 @@ fn mm_main() -> u32 {
             ]
         }
     };
-    
+
     let w = miso_runner(world, 1);
     let rs = w.cs.cells.iter().map(|x| (*x).check);
     rs.fold(0, |p, val| p + val)
@@ -73,7 +73,7 @@ fn mm_main() -> u32 {
 
 #[allow(unused_variables)]
 fn main() {
-    
+
     benchmark::benchmark(move || {
         let m3 = mm_main();
         if args().count() > 1 {
