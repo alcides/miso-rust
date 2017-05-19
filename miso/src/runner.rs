@@ -3,7 +3,7 @@ use std::fmt::Debug;
 #[allow(unused_imports)]
 use std::sync::{Arc, Barrier, Mutex};
 
-pub trait Transitionable : Clone + Copy + Eq + PartialEq + Debug + Sync + Send {
+pub trait Transitionable : Clone + Copy + PartialEq + Debug + Sync + Send {
     fn transition(&mut self);
 }
 

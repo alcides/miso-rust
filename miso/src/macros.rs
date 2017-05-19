@@ -6,14 +6,14 @@ mod miso {
     #[macro_export]
     macro_rules! define_world {
         ($($element: ident: $ty: ty),*) => {
-            #[derive(Clone, Copy, Eq, PartialEq, Debug)]
+            #[derive(Clone, Copy, PartialEq, Debug)]
             struct World { $($element: $ty),* }
             
-            trait Cell<T> : Copy + Clone + Eq + PartialEq {
+            trait Cell<T> : Copy + Clone + PartialEq {
                 fn transition(&mut self, prev:&T, w:&World);
             }
             
-            #[derive(Clone, Copy, Eq, PartialEq, Debug)]
+            #[derive(Clone, Copy, PartialEq, Debug)]
             struct CellArray<T> where T : Cell<T> {
                 cells : [T; 8]
             }
@@ -48,17 +48,17 @@ mod miso {
     macro_rules! define_world {
         ($($element: ident: $ty: ty),*) => {
             
-            #[derive(Clone, Copy, Eq, PartialEq, Debug)]
+            #[derive(Clone, Copy, PartialEq, Debug)]
             struct World { 
                 $($element: $ty),*
             }
             
             
-            trait Cell<T> : Copy + Clone + Eq + PartialEq + Sync + Send {
+            trait Cell<T> : Copy + Clone + PartialEq + Sync + Send {
                 fn transition(&mut self, prev:&T, w:&World);
             }
             
-            #[derive(Clone, Copy, Eq, PartialEq, Debug)]
+            #[derive(Clone, Copy, PartialEq, Debug)]
             struct CellArray<T> where T : Cell<T> {
                 cells : [T; 8]
             }
@@ -152,7 +152,7 @@ mod miso {
                } => $sel:ident, $prev:ident, $world:ident $code:block)
            => {
                
-               #[derive(Clone, Copy, Eq, PartialEq, Debug)]
+               #[derive(Clone, Copy, PartialEq, Debug)]
                struct $dest_name {
                    $( $attr_name : $attr_type ),*
                }
