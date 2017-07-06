@@ -94,7 +94,8 @@ fn mm_main() -> f32 {
         }
     };
 
-    let w = miso_runner(world, 10000);
+    // was 10000
+    let w = miso_runner(world, 4000);
     let rs = w.cs.cells.iter().map(|x| (*x).check);
     rs.fold(0.0, |p, val| p + val)
 }
@@ -110,3 +111,4 @@ fn main() {
         m3
     });
 }
+

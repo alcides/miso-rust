@@ -66,7 +66,7 @@ fn mm_main() -> u32 {
         }
     };
 
-    let w = miso_runner(world, 1);
+    let w = miso_runner(world, 10);
     let rs = w.cs.cells.iter().map(|x| (*x).check);
     rs.fold(0, |p, val| p + val)
 }

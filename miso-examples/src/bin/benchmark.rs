@@ -7,7 +7,7 @@ use self::energy::energy::start_recording;
 
 pub fn benchmark<R, F>(mut func: F) where F : FnMut() -> R, R: PartialEq {
 
-    let mut iterations = 0;
+    //let mut iterations = 0;
     let mut time = Duration::seconds(0);
     let mut energy = 0.0;
 
@@ -16,11 +16,11 @@ pub fn benchmark<R, F>(mut func: F) where F : FnMut() -> R, R: PartialEq {
 
     let mut default:Option<R> = None;
 
-
-    while time < Duration::seconds(4) {
+    println!("Benchmark started");
+    //while time < Duration::seconds(4) {
         let r = func();
         time = start_t.to(PreciseTime::now());
-        iterations += 1;
+        //iterations += 1;
 
         match default {
             Some(d) => if d != r {
@@ -29,7 +29,7 @@ pub fn benchmark<R, F>(mut func: F) where F : FnMut() -> R, R: PartialEq {
             None => {}
         }
         default = Some(r);
-    }
+    //}
     let en = start_e.stop_recording();
     match en {
         None => {},
@@ -38,6 +38,8 @@ pub fn benchmark<R, F>(mut func: F) where F : FnMut() -> R, R: PartialEq {
         }
     }
 
-    println!("Time: {}", time.num_milliseconds() as f64 / (1000 * iterations) as f64);
-    println!("Energy: {}", energy as f64 / (iterations) as f64);
+
+    println!("Time: {}", time.num_milliseconds() as f64);
+    println!("Energy: {}", energy as f64 / (1) as f64);
+    println!("Benchmark finished sucessfully");
 }

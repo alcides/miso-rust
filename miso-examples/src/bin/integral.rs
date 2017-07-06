@@ -6,7 +6,7 @@ use std::env::args;
 
 mod benchmark;
 
-const RESOLUTION:f64 = 100000.0;
+const RESOLUTION:f64 = 20000.0;
 
 
 define_cell!( IntegralCell {

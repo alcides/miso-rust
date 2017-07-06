@@ -1,3 +1,4 @@
+
 use std::fmt::Debug;
 
 #[allow(unused_imports)]
@@ -57,6 +58,7 @@ pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W {
             }
             println!("Fault detected!");
         }
+        
         iteration += next;
         if iteration >= i {
             break;

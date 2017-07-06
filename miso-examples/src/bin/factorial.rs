@@ -44,18 +44,18 @@ fn fib_main() -> BigUint {
     let world = World {
         facts : CellArray {
             cells : [
-                FactorialCell { lower: 1, upper: 20000, value: 1, overflows: 0},
-                FactorialCell { lower: 20000, upper: 40000, value: 1, overflows: 0},
-                FactorialCell { lower: 40000, upper: 60000, value: 1, overflows: 0},
-                FactorialCell { lower: 60000, upper: 80000, value: 1, overflows: 0},
-                FactorialCell { lower: 80000, upper: 100000, value: 1, overflows: 0},
-                FactorialCell { lower: 100000, upper: 120000, value: 1, overflows: 0},
-                FactorialCell { lower: 120000, upper: 140000, value: 1, overflows: 0},
-                FactorialCell { lower: 140000, upper: 160000, value: 1, overflows: 0},
+                FactorialCell { lower: 1, upper: 40000, value: 1, overflows: 0},
+                FactorialCell { lower: 40000, upper: 80000, value: 1, overflows: 0},
+                FactorialCell { lower: 80000, upper: 120000, value: 1, overflows: 0},
+                FactorialCell { lower: 120000, upper: 160000, value: 1, overflows: 0},
+                FactorialCell { lower: 160000, upper: 200000, value: 1, overflows: 0},
+                FactorialCell { lower: 200000, upper: 240000, value: 1, overflows: 0},
+                FactorialCell { lower: 240000, upper: 280000, value: 1, overflows: 0},
+                FactorialCell { lower: 280000, upper: 320000, value: 1, overflows: 0},
             ]
         }
     };
-    let w = miso_runner(world, 1);
+    let w = miso_runner(world, 4);
 
     let rs = w.facts.cells.iter().map(|x| extract(*x));
     rs.fold(BigUint::from(1u64), |p, val| p * val)
@@ -66,7 +66,7 @@ fn main() {
     benchmark::benchmark(|| {
         let r = fib_main();
         if args().count() > 1 {
-            println!("160000! = {}", r);
+            println!("320000! = {}", r);
         }
         r
     } );

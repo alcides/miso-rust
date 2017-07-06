@@ -26,7 +26,7 @@ fn fib_main() -> World {
         fc: FibCell { n: 2, prev: 1, curr: 1 },
     };
 
-    let w = miso_runner(world, 51-2);
+    let w = miso_runner(world, 5100-2);
     w
 }
 
