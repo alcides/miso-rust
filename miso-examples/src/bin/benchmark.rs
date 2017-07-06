@@ -25,11 +25,14 @@ pub fn benchmark<R, F>(mut func: F) where F : FnMut() -> R, R: PartialEq {
         match default {
             Some(d) => if d != r {
                 panic!("Value Fault not prevented!");
+            } else {
+                default = Some(r);
             },
             None => {}
         }
-        default = Some(r);
+
     //}
+
     let en = start_e.stop_recording();
     match en {
         None => {},
