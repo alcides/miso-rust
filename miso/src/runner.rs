@@ -44,15 +44,21 @@ pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W {
                     advance_world(world, next, b);
                 }));
             }
-            #[allow(unused_must_use)]
+
+            let mut check = true;
+
             for t in handles {
-                t.join();
+                let r = t.join();
+                match r {
+                        Ok(r) => {},
+                        Err(e) => { check = false; }
+                    }
             }
 
             let _1 = original.lock().unwrap();
             let _2 = backup.lock().unwrap();
 
-            if *_1 == *_2 {
+            if check && *_1 == *_2 {
                 break;
             }
             println!("Fault detected!");
