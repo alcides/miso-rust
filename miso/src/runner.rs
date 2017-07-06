@@ -22,8 +22,10 @@ pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W {
     use std::cmp::min;
 
     let bw = w;
-    let original = Arc::new(Mutex::new(w));
-    let backup = Arc::new(Mutex::new(bw));
+    let mut last_safe_world = w;
+
+    let mut w1 = Arc::new(Mutex::new(w));
+    let mut w2 = Arc::new(Mutex::new(bw));
 
     let copies = 2;
     let check_interval = 5;
@@ -36,7 +38,7 @@ pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W {
             let mut handles = Vec::with_capacity(copies);
             let barrier = Arc::new(Barrier::new(copies));
 
-            let worlds = vec!(original.clone(), backup.clone());
+            let worlds = vec!(w1.clone(), w2.clone());
 
             for world in worlds {
                 let b = barrier.clone();
@@ -46,22 +48,26 @@ pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W {
             }
 
             let mut check = true;
-
             for t in handles {
                 let r = t.join();
                 match r {
-                        Ok(r) => {},
-                        Err(e) => { check = false; }
+                        Ok(_) => {},
+                        Err(_) => { check = false; }
                     }
             }
-
-            let _1 = original.lock().unwrap();
-            let _2 = backup.lock().unwrap();
-
-            if check && *_1 == *_2 {
-                break;
+            {
+                let _1 = w1.lock().unwrap();
+                let _2 = w2.lock().unwrap();
+                if check && *_1 == *_2 {
+                    last_safe_world = *_1;
+                    break;
+                }
             }
+
             println!("Fault detected!");
+            let last_safe_world2 = last_safe_world;
+            w1 = Arc::new(Mutex::new(last_safe_world));
+            w2 = Arc::new(Mutex::new(last_safe_world2));
         }
         iteration += next;
         if iteration >= i {
@@ -69,7 +75,7 @@ pub fn miso_runner<W: Transitionable + 'static>(w: W, i:u64) -> W {
         }
     }
 
-    let k = original.lock().unwrap();
+    let k = w1.lock().unwrap();
     *k
 }
 
